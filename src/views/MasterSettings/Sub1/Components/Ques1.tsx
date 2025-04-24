@@ -30,6 +30,7 @@ type FormSchema = {
     country: string;
     channelName: string;
     isActive: boolean;
+    remarks: string; // Added remarks to the schema
 };
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table;
@@ -200,24 +201,22 @@ const Channel = () => {
         <div>
             <div className='flex flex-col lg:flex-row xl:flex-row gap-4'>
                 <Card bordered={false} className='lg:w-1/3 xl:w-1/3 h-1/2'>
-                    <h5 className='mb-2'>Channel Creation</h5>
+                    <h5 className='mb-2'> Queation 1 </h5>
                     <Form size="sm" onSubmit={handleSubmit(onSubmit)}>
-                        <FormItem
-                            invalid={Boolean(errors.country)}
-                            errorMessage={errors.country?.message}
+                    <FormItem
+                            invalid={Boolean(errors.channelName)}
+                            errorMessage={errors.channelName?.message}
                         >
                             <Controller
-                                name="country"
+                                name="remarks"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select
-                                        size="sm"
-                                        placeholder="Select Country"
-                                        options={[
-                                            { label: 'All Island', value: 'All Island' }as any,
-                                        ]}
-                                        value={field.value}
-                                        onChange={(selectedOption) => field.onChange(selectedOption)}
+                                    <Input
+                                        type="text"
+                                        autoComplete="off"
+                                        placeholder="Remarks"
+                                        {...field}
+                                        value={typeof field.value === 'string' ? field.value : ''}
                                     />
                                 }
                                 rules={{
@@ -233,17 +232,17 @@ const Channel = () => {
                             />
                         </FormItem>
                         <FormItem
-                            invalid={Boolean(errors.channelName)}
-                            errorMessage={errors.channelName?.message}
+                            invalid={Boolean(errors.remarks)}
+                            errorMessage={errors.remarks?.message}
                         >
                             <Controller
-                                name="channelName"
+                                name="remarks"
                                 control={control}
                                 render={({ field }) =>
                                     <Input
                                         type="text"
                                         autoComplete="off"
-                                        placeholder="Channel Name"
+                                        placeholder="Remarks"
                                         {...field}
                                     />
                                 }
@@ -259,83 +258,109 @@ const Channel = () => {
                                 }}
                             />
                         </FormItem>
+                        
+
+                     
 
                         <FormItem>
-                            <Controller
-                                name="isActive"
-                                control={control}
-                                render={({ field }) =>
-                                    <Checkbox {...field} checked={field.value}>
-                                        IsActive
-                                    </Checkbox>
-                                }
-                            />
-                        </FormItem>
-
-                        <FormItem>
-                            <Button variant="solid" block type="submit">Create</Button>
+                            <Button variant="solid" block type="submit">Submit</Button>
                         </FormItem>
                     </Form>
                 </Card>
 
-                <Card bordered={false} className='lg:w-2/3 xl:w-2/3 overflow-auto'>
-                    <div>
-                        <DebouncedInput
-                            value={globalFilter ?? ''}
-                            className="font-xs shadow border border-block"
-                            placeholder="Search all columns..."
-                            onChange={(value) => setGlobalFilter(String(value))}
-                        />
-                        <Table>
-                            <THead>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <Tr key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <Th key={header.id} colSpan={header.colSpan}>
-                                                {header.isPlaceholder ? null : (
-                                                    <div
-                                                        className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                                        onClick={header.column.getToggleSortingHandler()}
-                                                    >
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                                        <Sorter sort={header.column.getIsSorted()} />
-                                                    </div>
-                                                )}
-                                            </Th>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </THead>
-                            <TBody>
-                                {table.getRowModel().rows.map((row) => (
-                                    <Tr key={row.id}>
-                                        {row.getVisibleCells().map((cell) => (
-                                            <Td key={cell.id} className='py-1 text-xs'>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </Td>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </TBody>
-                        </Table>
-                        <div className="flex items-center justify-between mt-4">
-                            <Pagination
-                                pageSize={table.getState().pagination.pageSize}
-                                currentPage={table.getState().pagination.pageIndex + 1}
-                                total={totalData}
-                                onChange={onPaginationChange}
+                <Card bordered={false} className='lg:w-1/3 xl:w-2/3 h-1/2'>
+               
+                    
+                <div className="flex justify-center items-center">
+                    <DebouncedInput
+                        value={globalFilter ?? ''}
+                        className="font-xs shadow border border-block"
+                        placeholder="Search Emp No..."
+                        onChange={(value) => setGlobalFilter(String(value))}
+                    />
+                </div>
+                  
+
+                  
+                <FormItem label="Name">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Channel Name"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
                             />
-                            <div style={{ minWidth: 130 }}>
-                                <Select
-                                    size="sm"
-                                    isSearchable={false}
-                                    value={pageSizeOptions.find(option => option.value === pageSize)}
-                                    options={pageSizeOptions}
-                                    onChange={(option) => onSelectChange(option?.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                        }
+                    />
+                </FormItem>
+          
+
+
+                <FormItem label="Employee Number">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Employee No"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Company">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Company"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Department">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Department"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Designation">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Designation"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+            
                 </Card>
             </div>
         </div>

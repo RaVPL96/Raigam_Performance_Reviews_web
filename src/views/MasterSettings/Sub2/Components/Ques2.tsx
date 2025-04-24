@@ -7,6 +7,7 @@ import Pagination from '@/components/ui/Pagination';
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import Tag from '@/components/ui/Tag';
+import InputGroup from '@/components/ui/InputGroup';
 import { useForm, Controller } from 'react-hook-form';
 import { FormItem, Form } from '@/components/ui/Form';
 
@@ -26,9 +27,10 @@ import Checkbox from '@/components/ui/Checkbox';
 import type { ChangeEvent } from 'react';
 
 type FormSchema = {
-    channel: string;
-    subChannelName: string;
+    country: string;
+    channelName: string;
     isActive: boolean;
+    remarks: string; // Added remarks to the schema
 };
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table;
@@ -41,11 +43,9 @@ const pageSizeOptions = [
     { value: 50, label: '50 / page' },
 ];
 
-interface SubChannel {
+interface Channel {
     channelCode: string;
     channelName: string;
-    subChannelCode: string;
-    subChannelName: string;
     isActive?: boolean;
 }
 
@@ -85,17 +85,17 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     return itemRank.passed;
 };
 
-const SubChannel = () => {
+const Channel = () => {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [pageSize, setPageSize] = useState(10);
     const [error, setError] = useState<string | null>(null);
+    const [country, setCountry] = useState<string | null>(null);
+    const [channelName, setChannelName] = useState<string>('');
 
-    const columns = useMemo<ColumnDef<SubChannel>[]>(() => [
+    const columns = useMemo<ColumnDef<Channel>[]>(() => [
         { header: 'Channel Code', accessorKey: 'channelCode' },
         { header: 'Channel Name', accessorKey: 'channelName' },
-        { header: 'Sub-Channel Code', accessorKey: 'subChannelCode' },
-        { header: 'Sub-Channel Name', accessorKey: 'subChannelName' },
         {
             header: 'Is Active',
             accessorKey: 'isActive',
@@ -119,11 +119,19 @@ const SubChannel = () => {
         },
     ], []);
 
-    const [data] = useState<SubChannel[]>([
-        { channelCode: '1', channelName: 'National Channel', subChannelCode: 'R1A', subChannelName: 'National C', isActive: true },
-        { channelCode: '1', channelName: 'National Channel', subChannelCode: 'R2A', subChannelName: 'National D', isActive: false },
-        { channelCode: '2', channelName: 'Bakery Channel', subChannelCode: 'R3A', subChannelName: 'Horeka', isActive: true },
-        { channelCode: '2', channelName: 'Bakery Channel', subChannelCode: 'R4A', subChannelName: 'Bakery', isActive: false },
+    const [data] = useState<Channel[]>([
+        { channelCode: '1', channelName: 'National Channel C', isActive: true },
+        { channelCode: '2', channelName: 'National Channel D', isActive: false },
+        { channelCode: '3', channelName: 'Bakery Channel', isActive: true },
+        { channelCode: '4', channelName: 'Ruchi Channel', isActive: false },
+        { channelCode: '1', channelName: 'National Channel C', isActive: true },
+        { channelCode: '2', channelName: 'National Channel D', isActive: false },
+        { channelCode: '3', channelName: 'Bakery Channel', isActive: true },
+        { channelCode: '4', channelName: 'Ruchi Channel', isActive: false },
+        { channelCode: '1', channelName: 'National Channel C', isActive: true },
+        { channelCode: '2', channelName: 'National Channel D', isActive: false },
+        { channelCode: '3', channelName: 'Bakery Channel', isActive: true },
+        { channelCode: '4', channelName: 'Ruchi Channel', isActive: false },
     ]);
 
     const totalData = data.length;
@@ -157,14 +165,19 @@ const SubChannel = () => {
         console.log(value, e);
     };
 
-    const handleEdit = (channel: SubChannel) => {
+    const handleEdit = (channel: Channel) => {
         // Implement edit functionality here
         console.log('Edit:', channel);
     };
 
-    const handleDelete = (channel: SubChannel) => {
+    const handleDelete = (channel: Channel) => {
         // Implement delete functionality here
         console.log('Delete:', channel);
+    };
+
+    const handleCreate = () => {
+        setError(null);
+        console.log('Create channel:', { country, channelName });
     };
 
     const {
@@ -173,8 +186,8 @@ const SubChannel = () => {
         control,
     } = useForm<FormSchema>({
         defaultValues: {
-            channel: '',
-            subChannelName: '',
+            country: '',
+            channelName: '',
             isActive: true, // Set default value to true
         },
     });
@@ -188,25 +201,22 @@ const SubChannel = () => {
         <div>
             <div className='flex flex-col lg:flex-row xl:flex-row gap-4'>
                 <Card bordered={false} className='lg:w-1/3 xl:w-1/3 h-1/2'>
-                    <h5 className='mb-2'>Sub-Channel Creation</h5>
+                    <h5 className='mb-2'> Queation 2 </h5>
                     <Form size="sm" onSubmit={handleSubmit(onSubmit)}>
-                        <FormItem
-                            invalid={Boolean(errors.channel)}
-                            errorMessage={errors.channel?.message}
+                    <FormItem
+                            invalid={Boolean(errors.channelName)}
+                            errorMessage={errors.channelName?.message}
                         >
                             <Controller
-                                name="channel"
+                                name="remarks"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select
-                                        size="sm"
-                                        placeholder="Select Channel"
-                                        options={[
-                                            { label: 'National Channel', value: 'National Channel' }as any,
-                                            { label: 'Bakery Channel', value: 'Bakery Channel' },
-                                        ]}
-                                        value={field.value}
-                                        onChange={(selectedOption) => field.onChange(selectedOption)}
+                                    <Input
+                                        type="text"
+                                        autoComplete="off"
+                                        placeholder="Remarks"
+                                        {...field}
+                                        value={typeof field.value === 'string' ? field.value : ''}
                                     />
                                 }
                                 rules={{
@@ -222,17 +232,17 @@ const SubChannel = () => {
                             />
                         </FormItem>
                         <FormItem
-                            invalid={Boolean(errors.subChannelName)}
-                            errorMessage={errors.subChannelName?.message}
+                            invalid={Boolean(errors.remarks)}
+                            errorMessage={errors.remarks?.message}
                         >
                             <Controller
-                                name="subChannelName"
+                                name="remarks"
                                 control={control}
                                 render={({ field }) =>
                                     <Input
                                         type="text"
                                         autoComplete="off"
-                                        placeholder="Sub-Channel Name"
+                                        placeholder="Remarks"
                                         {...field}
                                     />
                                 }
@@ -248,87 +258,113 @@ const SubChannel = () => {
                                 }}
                             />
                         </FormItem>
+                        
+
+                     
 
                         <FormItem>
-                            <Controller
-                                name="isActive"
-                                control={control}
-                                render={({ field }) =>
-                                    <Checkbox {...field} checked={field.value}>
-                                        IsActive
-                                    </Checkbox>
-                                }
-                            />
-                        </FormItem>
-
-                        <FormItem>
-                            <Button variant="solid" block type="submit">Create</Button>
+                            <Button variant="solid" block type="submit">Submit</Button>
                         </FormItem>
                     </Form>
                 </Card>
 
-                <Card bordered={false} className='lg:w-2/3 xl:w-2/3 overflow-auto'>
-                    <div>
-                        <DebouncedInput
-                            value={globalFilter ?? ''}
-                            className="font-xs shadow border border-block"
-                            placeholder="Search all columns..."
-                            onChange={(value) => setGlobalFilter(String(value))}
-                        />
-                        <Table>
-                            <THead>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <Tr key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <Th key={header.id} colSpan={header.colSpan}>
-                                                {header.isPlaceholder ? null : (
-                                                    <div
-                                                        className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                                        onClick={header.column.getToggleSortingHandler()}
-                                                    >
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                                        <Sorter sort={header.column.getIsSorted()} />
-                                                    </div>
-                                                )}
-                                            </Th>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </THead>
-                            <TBody>
-                                {table.getRowModel().rows.map((row) => (
-                                    <Tr key={row.id}>
-                                        {row.getVisibleCells().map((cell) => (
-                                            <Td key={cell.id} className='py-1 text-xs'>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </Td>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </TBody>
-                        </Table>
-                        <div className="flex items-center justify-between mt-4">
-                            <Pagination
-                                pageSize={table.getState().pagination.pageSize}
-                                currentPage={table.getState().pagination.pageIndex + 1}
-                                total={totalData}
-                                onChange={onPaginationChange}
+                <Card bordered={false} className='lg:w-1/3 xl:w-2/3 h-1/2'>
+               
+                    
+                <div className="flex justify-center items-center">
+                    <DebouncedInput
+                        value={globalFilter ?? ''}
+                        className="font-xs shadow border border-block"
+                        placeholder="Search Emp No..."
+                        onChange={(value) => setGlobalFilter(String(value))}
+                    />
+                </div>
+                  
+
+                  
+                <FormItem label="Name">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Channel Name"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
                             />
-                            <div style={{ minWidth: 130 }}>
-                                <Select
-                                    size="sm"
-                                    isSearchable={false}
-                                    value={pageSizeOptions.find(option => option.value === pageSize)}
-                                    options={pageSizeOptions}
-                                    onChange={(option) => onSelectChange(option?.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                        }
+                    />
+                </FormItem>
+          
+
+
+                <FormItem label="Employee Number">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Employee No"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Company">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Company"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Department">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Department"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+                <FormItem label="Designation">
+                    <Controller
+                        name="channelName"
+                        control={control}
+                        render={({ field }) =>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Designation"
+                                {...field}
+                                value={typeof field.value === 'string' ? field.value : ''}
+                            />
+                        }
+                    />
+                </FormItem>
+            
                 </Card>
             </div>
         </div>
     );
 };
 
-export default SubChannel;
+export default Channel;
